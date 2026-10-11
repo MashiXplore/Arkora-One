@@ -77,7 +77,6 @@ export function UserEditModal({ isOpen, onClose, user, onSuccess }: UserEditModa
       isOpen={isOpen}
       onClose={onClose}
       title="Editar Usuario"
-      description={`Modificar la información de ${user.name}`}
       size="md"
       footer={
         <>

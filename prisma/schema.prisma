@@ -69,5 +69,272 @@ model User {
 
   role Role @relation(fields: [roleId], references: [id])
 
+  ordenesRecepcionadas Orden[]   @relation("OrdenRecepcionista")
+  ordenesAsignadas     Orden[]   @relation("OrdenTecnico")
+  informes             Informe[]
+
   @@map("users")
 }
+
+// ─────────────────────────────────────
+// MÓDULO: FUNCIONARIOS Y ESTRUCTURA ORGANIZACIONAL
+// ─────────────────────────────────────
+
+model Sucursal {
+  id        Int       @id @default(autoincrement())
+  nombre    String    @unique @db.VarChar(150)
+  direccion String?   @db.Text
+  telefono  String?   @db.VarChar(50)
+  estado    Boolean   @default(true)
+  
+  agencias  Agencia[]
+  
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("sucursales")
+}
+
+model Agencia {
+  id               Int           @id @default(autoincrement())
+  nombre           String        @unique @db.VarChar(150)
+  direccion        String?       @db.Text
+  telefono         String?       @db.VarChar(50)
+  especificaciones Json?
+  estado           Boolean       @default(true)
+  
+  // Relaciones
+  sucursalId   Int?          @map("sucursal_id")
+  sucursal     Sucursal?     @relation(fields: [sucursalId], references: [id])
+  
+  funcionarios Funcionario[]
+  informes     Informe[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("agencias")
+}
+
+model Cargo {
+  id               Int           @id @default(autoincrement())
+  nombre           String        @unique @db.VarChar(150)
+  descripcion      String?       @db.Text
+  especificaciones Json?
+  estado           Boolean       @default(true)
+  
+  // Relaciones
+  funcionarios Funcionario[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("cargos")
+}
+
+model Funcionario {
+  id                Int      @id @default(autoincrement())
+  nombre            String   @db.VarChar(150)
+  correo            String?  @db.VarChar(150)
+  telefono          String?  @db.VarChar(50)
+  departamento_area String?  @map("departamento_area") @db.VarChar(100)
+  estado            Boolean  @default(true)
+  
+  // Relaciones
+  cargoId   Int      @map("cargo_id")
+  cargo     Cargo    @relation(fields: [cargoId], references: [id])
+  agenciaId Int      @map("agencia_id")
+  agencia   Agencia  @relation(fields: [agenciaId], references: [id])
+  equipos   Equipo[]
+  ordenes   Orden[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("funcionarios")
+}
+
+// ─────────────────────────────────────
+// MÓDULO: EQUIPOS E INVENTARIO TI
+// ─────────────────────────────────────
+
+enum EstadoOperativo {
+  operativo
+  en_mantenimiento
+  de_baja
+  en_desuso
+}
+
+model Marca {
+  id           Int          @id @default(autoincrement())
+  nombre       String       @unique @db.VarChar(100)
+  slug         String       @unique @db.VarChar(100)
+  imagen       String?      @db.Text
+  estado       Boolean      @default(true)
+  
+  // Relaciones
+  modelos      Modelo[]
+  equipos      Equipo[]
+  tipo_equipos TipoEquipo[]
+  
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  @@map("marcas")
+}
+
+model TipoEquipo {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @db.VarChar(100)
+  slug      String   @db.VarChar(100)
+  estado    Boolean  @default(true)
+  
+  marcaId   Int?     @map("marca_id")
+  marca     Marca?   @relation(fields: [marcaId], references: [id])
+  
+  // Relaciones
+  modelos   Modelo[]
+  equipos   Equipo[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("tipos_equipo")
+}
+
+model Modelo {
+  id               Int         @id @default(autoincrement())
+  nombre           String      @db.VarChar(100)
+  slug             String?     @db.VarChar(100)
+  especificaciones Json?
+  estado           Boolean     @default(true)
+  
+  // Relaciones
+  marcaId          Int         @map("marca_id")
+  marca            Marca       @relation(fields: [marcaId], references: [id])
+  tipo_equipo_id   Int?        @map("tipo_equipo_id")
+  tipo_equipo      TipoEquipo? @relation(fields: [tipo_equipo_id], references: [id])
+  equipos          Equipo[]
+  
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+
+  @@map("modelos")
+}
+
+model Equipo {
+  id               Int             @id @default(autoincrement())
+  numero_etiqueta  String          @unique @map("numero_etiqueta") @db.VarChar(100)
+  numero_serie     String?         @map("numero_serie") @db.VarChar(100)
+  fecha_ingreso    DateTime?       @map("fecha_ingreso") @db.Date
+  observaciones    String?         @db.Text
+  imagen           String?         @db.Text
+  especificaciones Json?
+  estado_operativo EstadoOperativo @default(operativo) @map("estado_operativo")
+  
+  // Relaciones
+  tipo_equipo_id   Int             @map("tipo_equipo_id")
+  tipo_equipo      TipoEquipo      @relation(fields: [tipo_equipo_id], references: [id])
+  
+  marca_id         Int             @map("marca_id")
+  marca            Marca           @relation(fields: [marca_id], references: [id])
+  
+  modelo_id        Int             @map("modelo_id")
+  modelo           Modelo          @relation(fields: [modelo_id], references: [id])
+  
+  funcionario_id   Int?            @map("funcionario_id")
+  funcionario      Funcionario?    @relation(fields: [funcionario_id], references: [id])
+  ordenes          Orden[]
+  
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  @@map("equipos")
+}
+
+// ─────────────────────────────────────
+// MÓDULO: ÓRDENES DE SERVICIO E INFORMES
+// ─────────────────────────────────────
+
+enum EstadoOrden {
+  creado
+  en_proceso
+  finalizado
+  entregado
+  cancelado
+}
+
+enum TipoServicio {
+  reparacion
+  mantenimiento_preventivo
+  mantenimiento_correctivo
+  diagnostico
+  instalacion
+}
+
+enum Prioridad {
+  baja
+  media
+  alta
+  urgente
+}
+
+model Orden {
+  id                     Int          @id @default(autoincrement())
+  numero_orden           String       @unique @map("numero_orden") @db.VarChar(30)
+  fecha                  DateTime     @default(now())
+  estado                 EstadoOrden  @default(creado)
+  tipo_servicio          TipoServicio @default(reparacion) @map("tipo_servicio")
+  prioridad              Prioridad    @default(media)
+  diagnostico_inicial    String?      @map("diagnostico_inicial") @db.Text
+  fecha_estimada_entrega DateTime?    @map("fecha_estimada_entrega") @db.Date
+  especificaciones       Json?
+  
+  // Relaciones
+  id_recepcion           Int          @map("id_recepcion")
+  recepcionista          User         @relation("OrdenRecepcionista", fields: [id_recepcion], references: [id])
+  
+  id_tecnico             Int?         @map("id_tecnico")
+  tecnico                User?        @relation("OrdenTecnico", fields: [id_tecnico], references: [id])
+  
+  id_equipo              Int          @map("id_equipo")
+  equipo                 Equipo       @relation(fields: [id_equipo], references: [id])
+  
+  id_funcionario         Int          @map("id_funcionario")
+  funcionario            Funcionario  @relation(fields: [id_funcionario], references: [id])
+  
+  informe                Informe?
+  
+  createdAt              DateTime     @default(now()) @map("created_at")
+  updatedAt              DateTime     @updatedAt @map("updated_at")
+
+  @@map("ordenes")
+}
+
+model Informe {
+  id                Int      @id @default(autoincrement())
+  tipo_informe      String   @map("tipo_informe") @db.VarChar(100)
+  titulo            String   @db.VarChar(200)
+  descripcion       String?  @db.Text
+  diagnostico_final String?  @map("diagnostico_final") @db.Text
+  solucion_aplicada String?  @map("solucion_aplicada") @db.Text
+  fecha             DateTime @default(now()) @db.Date
+  archivo_ruta      String?  @map("archivo_ruta") @db.VarChar(255)
+  
+  // Relaciones
+  user_id           Int      @map("user_id")
+  tecnico           User     @relation(fields: [user_id], references: [id])
+  
+  orden_id          Int      @unique @map("orden_id")
+  orden             Orden    @relation(fields: [orden_id], references: [id])
+  
+  agencia_id        Int?     @map("agencia_id")
+  agencia           Agencia? @relation(fields: [agencia_id], references: [id])
+  
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("informes")
+}
+
+

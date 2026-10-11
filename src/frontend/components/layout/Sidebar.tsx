@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Users,
+  UserCheck,
   Laptop,
   ClipboardList,
   AlertTriangle,
@@ -39,7 +40,12 @@ const navItems = [
     icon: Users,
   },
   {
-    label: 'Inventario',
+    label: 'Funcionarios',
+    href: '/funcionarios',
+    icon: UserCheck,
+  },
+  {
+    label: 'Equipo',
     href: '/inventory',
     icon: Laptop,
   },

@@ -58,7 +58,6 @@ export function UserCreateModal({ isOpen, onClose }: Props) {
       isOpen={isOpen}
       onClose={onClose}
       title="Nuevo Usuario"
-      description="Crear una nueva cuenta de usuario en el sistema Arkora"
       size="md"
       footer={
         <>
