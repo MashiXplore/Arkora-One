@@ -236,11 +236,10 @@ export function AgenciasTab() {
         title={editingAgencia ? 'Editar Agencia' : 'Nueva Agencia'}
         size="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} autoComplete="off" className="space-y-3.5">
           <Input
             id="agencia-nombre"
             label="Nombre de la Agencia *"
-            placeholder="Ej. Agencia Central La Paz"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
           />
@@ -263,14 +262,12 @@ export function AgenciasTab() {
           <Input
             id="agencia-direccion"
             label="Dirección"
-            placeholder="Ej. Calle 15 de Calacoto #8000"
             value={direccion}
             onChange={(e) => setDireccion(e.target.value)}
           />
           <Input
             id="agencia-telefono"
             label="Teléfono"
-            placeholder="Ej. 22791100"
             value={telefono}
             onChange={(e) => setTelefono(e.target.value)}
           />

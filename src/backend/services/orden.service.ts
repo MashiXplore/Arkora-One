@@ -119,6 +119,20 @@ export const ordenService = {
       throw new Error('La orden ya cuenta con un informe técnico emitido');
     }
 
+    // Si se subió una nueva foto para el informe/equipo, actualizar el activo en inventario
+    if (data.nueva_foto_equipo) {
+      const orden = await prisma.orden.findUnique({
+        where: { id: data.orden_id },
+        select: { id_equipo: true },
+      });
+      if (orden?.id_equipo) {
+        await prisma.equipo.update({
+          where: { id: orden.id_equipo },
+          data: { imagen: data.nueva_foto_equipo },
+        }).catch(() => {});
+      }
+    }
+
     const informe = await informeRepository.create(data);
 
     // Al emitir informe técnico, actualizar el estado de la orden a finalizado si está en proceso o creada

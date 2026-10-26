@@ -238,11 +238,10 @@ export function ModelosTab() {
         title={editingModelo ? 'Editar Modelo' : 'Nuevo Modelo'}
         size="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} autoComplete="off" className="space-y-3.5">
           <Input
             id="modelo-nombre"
             label="Nombre del Modelo *"
-            placeholder="Ej. Latitude 5420, ThinkPad T14"
             value={nombre}
             onChange={(e) => {
               setNombre(e.target.value);
@@ -255,7 +254,6 @@ export function ModelosTab() {
           <Input
             id="modelo-slug"
             label="Identificador Único (Slug)"
-            placeholder="Ej. latitude-5420"
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
           />

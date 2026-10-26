@@ -5,7 +5,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useOrdenes, useDeleteOrden } from '@/frontend/hooks/useOrdenes';
+import { useOrdenes, useDeleteOrden, useUpdateOrden } from '@/frontend/hooks/useOrdenes';
 import { Table, Badge, Button, ConfirmDialog, showToast } from '@/frontend/components/ui';
 import {
   Edit2,
@@ -19,6 +19,8 @@ import {
   Laptop,
   User,
   Shield,
+  Printer,
+  CheckCircle2,
 } from 'lucide-react';
 import type {
   OrdenWithRelations,
@@ -37,6 +39,7 @@ export interface OrdenesTableProps {
   onViewDetail: (orden: OrdenWithRelations) => void;
   onCreateInforme: (orden: OrdenWithRelations) => void;
   onViewInforme: (informeId: number) => void;
+  onPrint: (orden: OrdenWithRelations) => void;
 }
 
 export function OrdenesTable({
@@ -49,10 +52,12 @@ export function OrdenesTable({
   onViewDetail,
   onCreateInforme,
   onViewInforme,
+  onPrint,
 }: OrdenesTableProps) {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [itemToDelete, setItemToDelete] = useState<OrdenWithRelations | null>(null);
+  const [ordenToClose, setOrdenToClose] = useState<OrdenWithRelations | null>(null);
 
   const { data, isLoading } = useOrdenes({
     page,
@@ -65,6 +70,7 @@ export function OrdenesTable({
   });
 
   const deleteMutation = useDeleteOrden();
+  const updateMutation = useUpdateOrden();
 
   const ordenes =
     data && 'data' in data && Array.isArray(data.data) ? (data.data as OrdenWithRelations[]) : [];
@@ -83,6 +89,25 @@ export function OrdenesTable({
       showToast.error('Error al procesar la solicitud');
     } finally {
       setItemToDelete(null);
+    }
+  };
+
+  const handleConfirmClose = async () => {
+    if (!ordenToClose) return;
+    try {
+      const result = await updateMutation.mutateAsync({
+        id: ordenToClose.id,
+        data: { estado: 'finalizado' },
+      });
+      if (result.success) {
+        showToast.success(`Orden ${ordenToClose.numero_orden} cerrada exitosamente`);
+      } else {
+        showToast.error(result.error?.message ?? 'Error al cerrar la orden');
+      }
+    } catch {
+      showToast.error('Error al procesar el cierre');
+    } finally {
+      setOrdenToClose(null);
     }
   };
 
@@ -118,16 +143,14 @@ export function OrdenesTable({
 
   const formatServicio = (tipo: TipoServicio) => {
     switch (tipo) {
-      case 'mantenimiento_preventivo':
-        return 'Mant. Preventivo';
-      case 'mantenimiento_correctivo':
-        return 'Mant. Correctivo';
+      case 'instalacion':
+        return 'Software';
       case 'reparacion':
-        return 'Reparación';
+      case 'mantenimiento_preventivo':
+      case 'mantenimiento_correctivo':
+        return 'Hardware';
       case 'diagnostico':
         return 'Diagnóstico';
-      case 'instalacion':
-        return 'Instalación';
     }
   };
 
@@ -231,64 +254,117 @@ export function OrdenesTable({
     {
       id: 'informe',
       header: 'Informe Técnico',
-      cell: (row: OrdenWithRelations) => (
-        row.informe ? (
-          <button
-            onClick={() => onViewInforme(row.informe!.id)}
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
-            title="Ver informe técnico"
-          >
-            <FileCheck2 className="w-3 h-3" />
-            <span>Emitido</span>
-          </button>
-        ) : (
+      cell: (row: OrdenWithRelations) => {
+        const isClosed =
+          row.estado === 'finalizado' || row.estado === 'entregado' || row.estado === 'cancelado';
+
+        if (row.informe) {
+          return (
+            <button
+              onClick={() => onViewInforme(row.informe!.id)}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+              title="Ver informe técnico emitido"
+            >
+              <FileCheck2 className="w-3 h-3" />
+              <span>Emitido</span>
+            </button>
+          );
+        }
+
+        // Si la orden está cerrada, NO se puede convertir en informe técnico
+        if (isClosed) {
+          return (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 cursor-not-allowed"
+              title="No disponible: La orden ya está cerrada"
+            >
+              Orden Cerrada
+            </span>
+          );
+        }
+
+        // Si la orden está abierta, se permite convertir en informe
+        return (
           <button
             onClick={() => onCreateInforme(row)}
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-slate-50 dark:bg-slate-800/80 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700 hover:border-blue-300 transition-colors"
-            title="Generar informe para esta orden"
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+            title="Convertir esta orden en Informe Técnico"
           >
             <FilePlus className="w-3 h-3" />
-            <span>Pendiente</span>
+            <span>Convertir a Informe</span>
           </button>
-        )
-      ),
+        );
+      },
     },
     {
       id: 'acciones',
       header: 'Acciones',
-      cell: (row: OrdenWithRelations) => (
-        <div className="flex items-center gap-1 justify-end">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onViewDetail(row)}
-            title="Ver detalles"
-            className="h-7 w-7 p-0 text-slate-500 hover:text-blue-600"
-          >
-            <Eye className="w-3.5 h-3.5" />
-          </Button>
+      cell: (row: OrdenWithRelations) => {
+        const isClosed =
+          row.estado === 'finalizado' || row.estado === 'entregado' || row.estado === 'cancelado';
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEdit(row)}
-            title="Editar orden"
-            className="h-7 w-7 p-0 text-slate-500 hover:text-amber-600"
-          >
-            <Edit2 className="w-3.5 h-3.5" />
-          </Button>
+        return (
+          <div className="flex items-center gap-1 justify-end">
+            {/* Botón 1-clic Cerrar Orden si no está cerrada */}
+            {!isClosed && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setOrdenToClose(row)}
+                title="Cerrar orden de servicio"
+                className="h-7 px-2 text-[11px] text-emerald-600 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950/40 font-semibold"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                Cerrar
+              </Button>
+            )}
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setItemToDelete(row)}
-            title="Eliminar orden"
-            className="h-7 w-7 p-0 text-slate-400 hover:text-rose-600"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
-        </div>
-      ),
+            {/* Imprimir Ficha de la Orden */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onPrint(row)}
+              title="Imprimir ficha de la orden"
+              className="h-7 w-7 p-0 text-slate-500 hover:text-emerald-600"
+            >
+              <Printer className="w-3.5 h-3.5" />
+            </Button>
+
+            {/* Ver Detalles */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onViewDetail(row)}
+              title="Ver detalles"
+              className="h-7 w-7 p-0 text-slate-500 hover:text-blue-600"
+            >
+              <Eye className="w-3.5 h-3.5" />
+            </Button>
+
+            {/* Editar */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(row)}
+              title="Editar orden"
+              className="h-7 w-7 p-0 text-slate-500 hover:text-amber-600"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+            </Button>
+
+            {/* Eliminar */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setItemToDelete(row)}
+              title="Eliminar orden"
+              className="h-7 w-7 p-0 text-slate-400 hover:text-rose-600"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 
@@ -332,6 +408,19 @@ export function OrdenesTable({
           </div>
         </div>
       )}
+
+      {/* Diálogo de Confirmación para Cerrar Orden */}
+      <ConfirmDialog
+        isOpen={Boolean(ordenToClose)}
+        onClose={() => setOrdenToClose(null)}
+        onConfirm={handleConfirmClose}
+        title="¿Cerrar Orden de Servicio?"
+        message={`¿Estás seguro de marcar la orden ${ordenToClose?.numero_orden} como finalizada? Una vez cerrada, no podrá convertirse en informe técnico.`}
+        confirmText="Confirmar Cierre"
+        cancelText="Cancelar"
+        variant="warning"
+        isLoading={updateMutation.isPending}
+      />
 
       {/* Diálogo de Confirmación para Eliminar */}
       <ConfirmDialog

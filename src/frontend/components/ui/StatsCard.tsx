@@ -6,11 +6,12 @@ export interface StatsCardProps {
   value: string | number;
   icon?: React.ReactNode;
   trend?: {
-    value: string;
+    value: string | number;
     isPositive?: boolean;
   };
   description?: string;
   className?: string;
+  isLoading?: boolean;
 }
 
 export const StatsCard: React.FC<StatsCardProps> = ({

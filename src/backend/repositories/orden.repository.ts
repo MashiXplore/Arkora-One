@@ -69,6 +69,7 @@ const informeInclude = {
         include: {
           marca: true,
           modelo: true,
+          tipo_equipo: true,
         },
       },
       funcionario: {
@@ -76,6 +77,12 @@ const informeInclude = {
           id: true,
           nombre: true,
           departamento_area: true,
+          agencia: {
+            select: {
+              id: true,
+              nombre: true,
+            },
+          },
         },
       },
     },
@@ -225,7 +232,11 @@ export const ordenRepository = {
         prioridad: data.prioridad,
         diagnostico_inicial: data.diagnostico_inicial,
         fecha_estimada_entrega: data.fecha_estimada_entrega,
-        especificaciones: data.especificaciones ? (data.especificaciones as Prisma.InputJsonValue) : Prisma.JsonNull,
+        especificaciones: data.especificaciones
+          ? typeof data.especificaciones === 'object'
+            ? JSON.stringify(data.especificaciones)
+            : String(data.especificaciones)
+          : null,
         id_recepcion: data.id_recepcion,
         id_tecnico: data.id_tecnico || null,
         id_equipo: data.id_equipo,
@@ -246,7 +257,11 @@ export const ordenRepository = {
     if (data.diagnostico_inicial !== undefined) updateData.diagnostico_inicial = data.diagnostico_inicial;
     if (data.fecha_estimada_entrega !== undefined) updateData.fecha_estimada_entrega = data.fecha_estimada_entrega;
     if (data.especificaciones !== undefined) {
-      updateData.especificaciones = data.especificaciones ? (data.especificaciones as Prisma.InputJsonValue) : Prisma.JsonNull;
+      updateData.especificaciones = data.especificaciones
+        ? typeof data.especificaciones === 'object'
+          ? JSON.stringify(data.especificaciones)
+          : String(data.especificaciones)
+        : null;
     }
     if (data.id_recepcion !== undefined) updateData.recepcionista = { connect: { id: data.id_recepcion } };
     if (data.id_tecnico !== undefined) {

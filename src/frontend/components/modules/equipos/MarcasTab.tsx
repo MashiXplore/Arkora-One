@@ -192,11 +192,10 @@ export function MarcasTab() {
         title={editingMarca ? 'Editar Marca' : 'Nueva Marca'}
         size="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} autoComplete="off" className="space-y-3.5">
           <Input
             id="marca-nombre"
             label="Nombre de la Marca *"
-            placeholder="Ej. Dell, Lenovo, HP"
             value={nombre}
             onChange={(e) => {
               setNombre(e.target.value);
@@ -208,7 +207,6 @@ export function MarcasTab() {
           <Input
             id="marca-slug"
             label="Identificador Único (Slug)"
-            placeholder="Ej. dell, lenovo"
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
           />

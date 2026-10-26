@@ -67,7 +67,6 @@ export default function LoginPage() {
                 autoComplete="email"
                 {...register('email')}
                 className="w-full px-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                placeholder="tu@correo.com"
               />
               {errors.email && (
                 <p className="mt-1.5 text-xs text-red-400">{errors.email.message}</p>
@@ -86,7 +85,6 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   {...register('password')}
                   className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  placeholder="••••••••"
                 />
                 <button
                   type="button"

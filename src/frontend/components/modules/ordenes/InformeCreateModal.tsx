@@ -133,7 +133,7 @@ export function InformeCreateModal({
       title="Emitir Informe Técnico Oficial"
       size="lg"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" className="space-y-4">
         {/* Orden y Técnico */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
@@ -185,7 +185,6 @@ export function InformeCreateModal({
           <Input
             id="informe-titulo"
             label="Título del Documento"
-            placeholder="Ej: Informe de Reparación y Mantenimiento Correctivo"
             error={errors.titulo?.message}
             {...register('titulo')}
           />
@@ -202,7 +201,6 @@ export function InformeCreateModal({
           <textarea
             id="informe-diag-final"
             rows={3}
-            placeholder="Detalle de fallas comprobadas en componentes, software o red..."
             className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             {...register('diagnostico_final')}
           />
@@ -219,7 +217,6 @@ export function InformeCreateModal({
           <textarea
             id="informe-solucion"
             rows={3}
-            placeholder="Procedimientos efectuados: reemplazo de partes, pasta térmica, reinstalación SO, limpieza..."
             className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             {...register('solucion_aplicada')}
           />

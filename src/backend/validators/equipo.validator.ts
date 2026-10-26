@@ -72,6 +72,7 @@ export const createEquipoSchema = z.object({
   fecha_ingreso: z.string().optional().nullable().or(z.literal('')),
   observaciones: z.string().optional().nullable().or(z.literal('')),
   imagen: z.string().optional().nullable().or(z.literal('')),
+  especificaciones: z.string().optional().nullable().or(z.record(z.unknown())).or(z.literal('')),
   estado_operativo: estadoOperativoEnum.default('operativo'),
   tipo_equipo_id: z.coerce
     .number({ required_error: 'El tipo de equipo es obligatorio' })

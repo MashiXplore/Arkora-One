@@ -17,7 +17,11 @@ import {
   MapPin,
   Mail,
   Phone,
+  Printer,
+  CheckCircle2,
 } from 'lucide-react';
+import { useUpdateOrden } from '@/frontend/hooks/useOrdenes';
+import { showToast } from '@/frontend/components/ui';
 import type { OrdenWithRelations, EstadoOrden, Prioridad, TipoServicio } from '@/types/orden.types';
 
 export interface OrdenDetailModalProps {
@@ -26,6 +30,7 @@ export interface OrdenDetailModalProps {
   orden: OrdenWithRelations | null;
   onCreateInforme: (orden: OrdenWithRelations) => void;
   onViewInforme: (informeId: number) => void;
+  onPrint?: (orden: OrdenWithRelations) => void;
 }
 
 export function OrdenDetailModal({
@@ -34,7 +39,10 @@ export function OrdenDetailModal({
   orden,
   onCreateInforme,
   onViewInforme,
+  onPrint,
 }: OrdenDetailModalProps) {
+  const updateMutation = useUpdateOrden();
+
   if (!orden) return null;
 
   const getEstadoBadge = (estado: EstadoOrden) => {
@@ -210,63 +218,128 @@ export function OrdenDetailModal({
 
         {/* Sección: Informe Técnico Asociado */}
         <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
-              <FileCheck2 className="w-4 h-4 text-emerald-500" />
-              <span>Informe Técnico Asociado</span>
-            </div>
-            {orden.informe ? (
+          {(() => {
+            const isClosed =
+              orden.estado === 'finalizado' ||
+              orden.estado === 'entregado' ||
+              orden.estado === 'cancelado';
+
+            return (
+              <>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
+                    <FileCheck2 className="w-4 h-4 text-emerald-500" />
+                    <span>Informe Técnico Asociado</span>
+                  </div>
+                  {orden.informe ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        onClose();
+                        onViewInforme(orden.informe!.id);
+                      }}
+                    >
+                      Ver Informe Técnico
+                    </Button>
+                  ) : isClosed ? (
+                    <span
+                      className="px-2.5 py-1 text-[11px] rounded-md bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 font-medium border border-slate-200 dark:border-slate-700"
+                      title="No se pueden emitir informes sobre órdenes cerradas"
+                    >
+                      Orden Cerrada (No convertible)
+                    </span>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      leftIcon={<FilePlus className="w-3.5 h-3.5" />}
+                      onClick={() => {
+                        onClose();
+                        onCreateInforme(orden);
+                      }}
+                    >
+                      Convertir en Informe Técnico
+                    </Button>
+                  )}
+                </div>
+
+                {orden.informe ? (
+                  <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1 text-slate-600 dark:text-slate-300">
+                    <div className="font-semibold text-slate-800 dark:text-slate-100">
+                      {orden.informe.titulo}
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Tipo: {orden.informe.tipo_informe} · Fecha: {formatDate(orden.informe.fecha)}
+                    </div>
+                    {orden.informe.solucion_aplicada && (
+                      <div className="text-slate-700 dark:text-slate-200 mt-1 line-clamp-2">
+                        <span className="font-medium text-slate-400">Solución: </span>
+                        {orden.informe.solucion_aplicada}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-slate-400 italic">
+                    {isClosed
+                      ? 'Esta orden fue cerrada sin generar informe técnico previo.'
+                      : 'Esta orden puede ser convertida en informe técnico si requiere cambio de piezas o diagnóstico grave.'}
+                  </p>
+                )}
+              </>
+            );
+          })()}
+        </div>
+
+        {/* Barra Inferior de Acciones */}
+        <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-2">
+            {/* Botón Imprimir Ficha */}
+            {onPrint && (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  onClose();
-                  onViewInforme(orden.informe!.id);
-                }}
+                leftIcon={<Printer className="w-3.5 h-3.5" />}
+                onClick={() => onPrint(orden)}
               >
-                Ver Informe Técnico
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                size="sm"
-                leftIcon={<FilePlus className="w-3.5 h-3.5" />}
-                onClick={() => {
-                  onClose();
-                  onCreateInforme(orden);
-                }}
-              >
-                Emitir Informe Técnico
+                Imprimir Ficha
               </Button>
             )}
+
+            {/* Botón Cerrar Orden Rápido si está abierta */}
+            {orden.estado !== 'finalizado' &&
+              orden.estado !== 'entregado' &&
+              orden.estado !== 'cancelado' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
+                  isLoading={updateMutation.isPending}
+                  className="text-emerald-600 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950/40 font-semibold"
+                  onClick={async () => {
+                    try {
+                      const res = await updateMutation.mutateAsync({
+                        id: orden.id,
+                        data: { estado: 'finalizado' },
+                      });
+                      if (res.success) {
+                        showToast.success(`Orden ${orden.numero_orden} cerrada correctamente`);
+                        onClose();
+                      } else {
+                        showToast.error(res.error?.message ?? 'Error al cerrar orden');
+                      }
+                    } catch {
+                      showToast.error('Error al procesar el cierre');
+                    }
+                  }}
+                >
+                  Cerrar Orden
+                </Button>
+              )}
           </div>
 
-          {orden.informe ? (
-            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1 text-slate-600 dark:text-slate-300">
-              <div className="font-semibold text-slate-800 dark:text-slate-100">
-                {orden.informe.titulo}
-              </div>
-              <div className="text-[11px] text-slate-400">
-                Tipo: {orden.informe.tipo_informe} · Fecha: {formatDate(orden.informe.fecha)}
-              </div>
-              {orden.informe.solucion_aplicada && (
-                <div className="text-slate-700 dark:text-slate-200 mt-1 line-clamp-2">
-                  <span className="font-medium text-slate-400">Solución: </span>
-                  {orden.informe.solucion_aplicada}
-                </div>
-              )}
-            </div>
-          ) : (
-            <p className="mt-2 text-slate-400 italic">
-              Esta orden aún no cuenta con un informe técnico de cierre o diagnóstico final.
-            </p>
-          )}
-        </div>
-
-        {/* Botón Cerrar */}
-        <div className="flex justify-end pt-2">
           <Button variant="outline" size="sm" onClick={onClose}>
-            Cerrar
+            Cerrar Ventana
           </Button>
         </div>
       </div>

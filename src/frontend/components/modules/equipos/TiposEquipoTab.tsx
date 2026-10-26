@@ -223,11 +223,10 @@ export function TiposEquipoTab() {
         title={editingTipo ? 'Editar Tipo de Equipo' : 'Nuevo Tipo de Equipo'}
         size="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} autoComplete="off" className="space-y-3.5">
           <Input
             id="tipo-nombre"
             label="Nombre del Tipo *"
-            placeholder="Ej. Laptop / Portátil"
             value={nombre}
             onChange={(e) => {
               setNombre(e.target.value);
@@ -240,7 +239,6 @@ export function TiposEquipoTab() {
           <Input
             id="tipo-slug"
             label="Identificador Único (Slug)"
-            placeholder="Ej. laptop, desktop"
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
           />

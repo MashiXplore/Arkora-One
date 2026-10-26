@@ -89,12 +89,11 @@ export function FuncionarioEditModal({ isOpen, funcionario, onClose }: Funcionar
       title="Editar Funcionario"
       size="md"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" className="space-y-3.5" noValidate>
         {/* Nombre */}
         <Input
           id="edit-func-nombre"
           label="Nombre Completo *"
-          placeholder="Ej. Roberto Morales Vargas"
           error={errors.nombre?.message}
           {...register('nombre')}
         />
@@ -105,14 +104,12 @@ export function FuncionarioEditModal({ isOpen, funcionario, onClose }: Funcionar
             id="edit-func-correo"
             label="Correo Electrónico"
             type="email"
-            placeholder="rmorales@diaconia.org.bo"
             error={errors.correo?.message}
             {...register('correo')}
           />
           <Input
             id="edit-func-telefono"
             label="Teléfono / Celular"
-            placeholder="Ej. 71234567"
             error={errors.telefono?.message}
             {...register('telefono')}
           />
@@ -122,7 +119,6 @@ export function FuncionarioEditModal({ isOpen, funcionario, onClose }: Funcionar
         <Input
           id="edit-func-depto"
           label="Departamento o Área"
-          placeholder="Ej. Operaciones, Créditos, Tecnología"
           error={errors.departamento_area?.message}
           {...register('departamento_area')}
         />

@@ -82,12 +82,11 @@ export function UserCreateModal({ isOpen, onClose }: Props) {
         </>
       }
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" className="flex flex-col gap-4">
         <Input
           id="create-name"
           label="Nombre Completo"
           required
-          placeholder="Ej: Juan Pérez García"
           error={errors.name?.message}
           {...register('name')}
         />
@@ -96,7 +95,6 @@ export function UserCreateModal({ isOpen, onClose }: Props) {
           id="create-username"
           label="Nombre de Usuario"
           required
-          placeholder="Ej: jperez"
           error={errors.username?.message}
           {...register('username')}
         />
@@ -106,7 +104,6 @@ export function UserCreateModal({ isOpen, onClose }: Props) {
           label="Correo Electrónico"
           type="email"
           required
-          placeholder="correo@diaconia.org.bo"
           error={errors.email?.message}
           {...register('email')}
         />
@@ -116,7 +113,6 @@ export function UserCreateModal({ isOpen, onClose }: Props) {
           label="Contraseña"
           type="password"
           required
-          placeholder="Mínimo 8 caracteres"
           error={errors.password?.message}
           {...register('password')}
         />

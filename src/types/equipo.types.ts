@@ -89,7 +89,7 @@ export interface Equipo {
   fecha_ingreso: string | Date | null;
   observaciones: string | null;
   imagen: string | null;
-  especificaciones?: Record<string, unknown> | null;
+  especificaciones?: string | Record<string, unknown> | null;
   estado_operativo: EstadoOperativoType;
   tipo_equipo_id: number;
   marca_id: number;
@@ -104,6 +104,7 @@ export interface EquipoWithRelations extends Equipo {
   marca: Marca;
   modelo: Modelo;
   funcionario?: (Funcionario & {
+    cargo?: { id: number; nombre: string; descripcion?: string | null } | null;
     agencia?: {
       id: number;
       nombre: string;
@@ -118,7 +119,7 @@ export interface CreateEquipoPayload {
   fecha_ingreso?: string | null;
   observaciones?: string | null;
   imagen?: string | null;
-  especificaciones?: Record<string, unknown> | null;
+  especificaciones?: string | Record<string, unknown> | null;
   estado_operativo?: EstadoOperativoType;
   tipo_equipo_id: number;
   marca_id: number;

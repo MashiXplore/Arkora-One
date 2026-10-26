@@ -88,6 +88,8 @@ export const createInformeSchema = z.object({
     .optional()
     .transform((val) => (val ? new Date(val) : new Date())),
   archivo_ruta: z.string().max(255).optional().nullable(),
+  nueva_foto_equipo: z.string().optional().nullable(),
+  foto_opcion: z.enum(['equipo', 'nueva', 'ninguna']).optional().nullable(),
   user_id: z.coerce
     .number({ required_error: 'El técnico autor es obligatorio' })
     .int()

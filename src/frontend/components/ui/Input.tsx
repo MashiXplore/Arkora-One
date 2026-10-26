@@ -20,6 +20,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       rightIcon,
       className,
       id,
+      autoComplete = 'off',
       ...props
     },
     ref
@@ -46,6 +47,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={inputId}
+            autoComplete={autoComplete}
+            data-lpignore="true"
+            data-form-type="other"
             className={twMerge(
               clsx(
                 'w-full px-3.5 py-2 text-sm rounded-lg border transition-colors bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 disabled:opacity-50 disabled:bg-slate-100 dark:disabled:bg-slate-800',

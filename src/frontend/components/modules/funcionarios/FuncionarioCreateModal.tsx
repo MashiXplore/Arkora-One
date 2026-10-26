@@ -80,12 +80,11 @@ export function FuncionarioCreateModal({ isOpen, onClose }: FuncionarioCreateMod
       title="Nuevo Funcionario"
       size="md"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" className="space-y-3.5" noValidate>
         {/* Nombre */}
         <Input
           id="create-func-nombre"
           label="Nombre Completo *"
-          placeholder="Ej. Roberto Morales Vargas"
           error={errors.nombre?.message}
           {...register('nombre')}
         />
@@ -96,14 +95,12 @@ export function FuncionarioCreateModal({ isOpen, onClose }: FuncionarioCreateMod
             id="create-func-correo"
             label="Correo Electrónico"
             type="email"
-            placeholder="rmorales@diaconia.org.bo"
             error={errors.correo?.message}
             {...register('correo')}
           />
           <Input
             id="create-func-telefono"
             label="Teléfono / Celular"
-            placeholder="Ej. 71234567"
             error={errors.telefono?.message}
             {...register('telefono')}
           />
@@ -113,7 +110,6 @@ export function FuncionarioCreateModal({ isOpen, onClose }: FuncionarioCreateMod
         <Input
           id="create-func-depto"
           label="Departamento o Área"
-          placeholder="Ej. Operaciones, Créditos, Tecnología"
           error={errors.departamento_area?.message}
           {...register('departamento_area')}
         />

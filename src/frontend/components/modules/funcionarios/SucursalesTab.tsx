@@ -200,25 +200,22 @@ export function SucursalesTab() {
         title={editingSucursal ? 'Editar Sucursal' : 'Nueva Sucursal'}
         size="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} autoComplete="off" className="space-y-3.5">
           <Input
             id="sucursal-nombre"
             label="Nombre de la Sucursal *"
-            placeholder="Ej. Sucursal La Paz"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
           />
           <Input
             id="sucursal-direccion"
             label="Dirección Principal"
-            placeholder="Ej. Av. Mariscal Santa Cruz #1234"
             value={direccion}
             onChange={(e) => setDireccion(e.target.value)}
           />
           <Input
             id="sucursal-telefono"
             label="Teléfono de Contacto"
-            placeholder="Ej. 22401122"
             value={telefono}
             onChange={(e) => setTelefono(e.target.value)}
           />

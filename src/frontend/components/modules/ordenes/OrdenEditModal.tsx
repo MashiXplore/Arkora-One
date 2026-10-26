@@ -91,11 +91,9 @@ export function OrdenEditModal({ isOpen, onClose, orden }: OrdenEditModalProps) 
   ];
 
   const tipoServicioOptions = [
-    { value: 'reparacion', label: 'Reparación / Corrección de Falla' },
-    { value: 'mantenimiento_preventivo', label: 'Mantenimiento Preventivo Planificado' },
-    { value: 'mantenimiento_correctivo', label: 'Mantenimiento Correctivo de Emergencia' },
-    { value: 'diagnostico', label: 'Diagnóstico / Revisión Técnica' },
-    { value: 'instalacion', label: 'Instalación / Configuración' },
+    { value: 'instalacion', label: 'Software (S.O., Programas, Configuración)' },
+    { value: 'reparacion', label: 'Hardware (Componentes, Reparación, Piezas)' },
+    { value: 'diagnostico', label: 'Diagnóstico General (Revisión Técnica)' },
   ];
 
   const prioridadOptions = [
@@ -115,7 +113,7 @@ export function OrdenEditModal({ isOpen, onClose, orden }: OrdenEditModalProps) 
       title={`Editar Orden ${orden?.numero_orden || ''}`}
       size="lg"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" className="space-y-4">
         {/* Resumen Informativo de Solo Lectura */}
         {orden && (
           <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 text-xs grid grid-cols-2 gap-2 text-slate-600 dark:text-slate-300">

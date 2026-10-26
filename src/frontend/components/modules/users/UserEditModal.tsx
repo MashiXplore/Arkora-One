@@ -98,7 +98,7 @@ export function UserEditModal({ isOpen, onClose, user, onSuccess }: UserEditModa
         </>
       }
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" className="flex flex-col gap-4">
         <Input
           id="edit-name"
           label="Nombre Completo"
@@ -122,7 +122,7 @@ export function UserEditModal({ isOpen, onClose, user, onSuccess }: UserEditModa
           id="edit-password"
           label="Nueva Contraseña (Opcional)"
           type="password"
-          placeholder="Dejar en blanco para mantener la actual"
+          helperText="Dejar en blanco para mantener la actual"
           error={errors.password?.message}
           {...register('password')}
         />

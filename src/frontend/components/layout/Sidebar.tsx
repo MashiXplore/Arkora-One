@@ -14,10 +14,12 @@ import {
   ClipboardList,
   AlertTriangle,
   Wrench,
+  FileText,
   BarChart3,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
+  Settings,
   X,
 } from 'lucide-react';
 
@@ -55,14 +57,19 @@ const navItems = [
     icon: ClipboardList,
   },
   {
-    label: 'Incidencias',
-    href: '/incidents',
-    icon: AlertTriangle,
-  },
-  {
     label: 'Órdenes de Servicio',
     href: '/work-orders',
     icon: Wrench,
+  },
+  {
+    label: 'Informes Técnicos',
+    href: '/informes',
+    icon: FileText,
+  },
+  {
+    label: 'Incidencias',
+    href: '/incidents',
+    icon: AlertTriangle,
   },
   {
     label: 'Reportes',
@@ -168,6 +175,37 @@ export function Sidebar({
           );
         })}
       </nav>
+
+      {/* Pinned Configuración at the bottom */}
+      <div className="px-2 py-2 border-t border-slate-300 dark:border-slate-800/80 shrink-0">
+        <Link
+          href="/settings"
+          onClick={onCloseMobile}
+          className={`flex items-center gap-2.5 text-xs font-medium transition-all duration-150 group relative ${
+            isCollapsed
+              ? 'justify-center w-10 h-10 mx-auto rounded-xl px-0'
+              : 'px-3 py-2 rounded-xl'
+          } ${
+            pathname === '/settings' || pathname.startsWith('/settings/')
+              ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/25 font-semibold'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+          }`}
+        >
+          <Settings
+            className={`w-4 h-4 shrink-0 transition-transform duration-150 group-hover:rotate-45 ${
+              pathname === '/settings' || pathname.startsWith('/settings/')
+                ? 'text-white'
+                : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-100'
+            }`}
+          />
+          {!isCollapsed && <span className="truncate flex-1">Configuración</span>}
+          {isCollapsed && (
+            <div className="fixed left-16 z-50 hidden group-hover:block px-2.5 py-1 bg-slate-900 dark:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap border border-slate-700 pointer-events-none">
+              Configuración
+            </div>
+          )}
+        </Link>
+      </div>
 
       {/* Footer Info */}
       <div className="p-2.5 border-t border-slate-300 dark:border-slate-800/80 shrink-0">

@@ -65,7 +65,7 @@ export function OrdenesFilters({
         <div className="lg:col-span-2">
           <Input
             id="search-ordenes"
-            placeholder="Buscar por N° orden, etiqueta (05-xxxxx), solicitante..."
+            placeholder="Buscar por N° orden, etiqueta, solicitante..."
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             leftIcon={<Search className="w-4 h-4 text-slate-400" />}

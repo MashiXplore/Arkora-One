@@ -1,13 +1,13 @@
 // src/app/(dashboard)/assignments/page.tsx
-// Ruta del módulo de Asignaciones y Carga Técnica
+// Ruta del módulo independiente de Asignaciones, Custodia y Seguimiento de Equipos TI
 
-import { OrdenesPage } from '@/frontend/components/modules/ordenes/OrdenesPage';
+import { AsignacionesPage } from '@/frontend/components/modules/asignaciones/AsignacionesPage';
 
 export const metadata = {
-  title: 'Asignaciones de Servicio | Arkora',
-  description: 'Control de asignaciones de equipos a técnicos y carga operativa de trabajo',
+  title: 'Asignaciones y Custodia de Equipos | Arkora',
+  description: 'Control de asignaciones de equipos a agencias y funcionarios, custodia y trazabilidad',
 };
 
 export default function AssignmentsRoute() {
-  return <OrdenesPage />;
+  return <AsignacionesPage />;
 }

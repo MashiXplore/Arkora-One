@@ -67,7 +67,7 @@ export function EquiposFilters({
         <div className="lg:col-span-1">
           <Input
             id="filter-search-equipo"
-            placeholder="Buscar por código (ej. 05-06795), serie, persona..."
+            placeholder="Buscar por código, serie, persona..."
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             leftIcon={<Search className="w-4 h-4 text-slate-400" />}

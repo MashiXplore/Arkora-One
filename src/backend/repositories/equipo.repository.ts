@@ -3,6 +3,7 @@
 // Skill: typescript-pro, api-design-principles
 
 import { prisma } from '@/backend/db/prisma';
+import { Prisma } from '@prisma/client';
 import type {
   CreateEquipoInput,
   UpdateEquipoInput,
@@ -21,6 +22,7 @@ const equipoInclude = {
   modelo: true,
   funcionario: {
     include: {
+      cargo: true,
       agencia: {
         include: {
           sucursal: true,
@@ -123,6 +125,11 @@ export const equipoRepository = {
         fecha_ingreso: data.fecha_ingreso ? new Date(data.fecha_ingreso) : null,
         observaciones: data.observaciones || null,
         imagen: data.imagen || null,
+        especificaciones: data.especificaciones
+          ? typeof data.especificaciones === 'object'
+            ? JSON.stringify(data.especificaciones)
+            : String(data.especificaciones)
+          : null,
         estado_operativo: (data.estado_operativo as EstadoOperativo) ?? 'operativo',
         tipo_equipo_id: data.tipo_equipo_id,
         marca_id: data.marca_id,
@@ -142,6 +149,13 @@ export const equipoRepository = {
     }
     if (data.observaciones !== undefined) updateData.observaciones = data.observaciones || null;
     if (data.imagen !== undefined) updateData.imagen = data.imagen || null;
+    if (data.especificaciones !== undefined) {
+      updateData.especificaciones = data.especificaciones
+        ? typeof data.especificaciones === 'object'
+          ? JSON.stringify(data.especificaciones)
+          : String(data.especificaciones)
+        : null;
+    }
     if (data.estado_operativo !== undefined) updateData.estado_operativo = data.estado_operativo as EstadoOperativo;
     if (data.tipo_equipo_id !== undefined) updateData.tipo_equipo_id = data.tipo_equipo_id;
     if (data.marca_id !== undefined) updateData.marca_id = data.marca_id;

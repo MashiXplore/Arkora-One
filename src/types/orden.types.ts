@@ -51,6 +51,7 @@ export interface OrdenWithRelations extends Orden {
     id: number;
     numero_etiqueta: string;
     numero_serie: string | null;
+    imagen?: string | null;
     marca: { id: number; nombre: string };
     modelo: { id: number; nombre: string };
     tipo_equipo: { id: number; nombre: string };
@@ -84,13 +85,17 @@ export interface InformeWithRelations extends Informe {
     equipo: {
       id: number;
       numero_etiqueta: string;
+      numero_serie?: string | null;
+      imagen?: string | null;
       marca: { id: number; nombre: string };
       modelo: { id: number; nombre: string };
+      tipo_equipo?: { id: number; nombre: string } | null;
     };
     funcionario: {
       id: number;
       nombre: string;
       departamento_area?: string | null;
+      agencia?: { id: number; nombre: string } | null;
     };
   };
 }
@@ -120,6 +125,8 @@ export interface CreateInformePayload {
   solucion_aplicada?: string | null;
   fecha?: string | Date | null;
   archivo_ruta?: string | null;
+  nueva_foto_equipo?: string | null;
+  foto_opcion?: 'equipo' | 'nueva' | 'ninguna';
   user_id: number;
   orden_id: number;
   agencia_id?: number | null;

@@ -190,7 +190,7 @@ export function EquipoEditModal({ isOpen, equipo, onClose }: EquipoEditModalProp
       title={`Editar Equipo ${equipo?.numero_etiqueta || ''}`}
       size="3xl"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" className="space-y-3" noValidate>
         {/* Contenedor de 3 Columnas Optimizadas */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 items-start">
           
@@ -259,7 +259,6 @@ export function EquipoEditModal({ isOpen, equipo, onClose }: EquipoEditModalProp
               <Input
                 id="edit-eq-etiqueta"
                 label="Código de Activo / Etiqueta *"
-                placeholder="Ej. 05-09201"
                 error={errors.numero_etiqueta?.message}
                 {...register('numero_etiqueta')}
               />
@@ -270,7 +269,6 @@ export function EquipoEditModal({ isOpen, equipo, onClose }: EquipoEditModalProp
               <Input
                 id="edit-eq-serie"
                 label="Número de Serie (S/N)"
-                placeholder="Ej. DL5420-99881A"
                 error={errors.numero_serie?.message}
                 {...register('numero_serie')}
               />
@@ -399,7 +397,7 @@ export function EquipoEditModal({ isOpen, equipo, onClose }: EquipoEditModalProp
             <div className="flex gap-1.5">
               <input
                 type="text"
-                placeholder="Ej. Asignado con cargador..."
+                autoComplete="off"
                 value={newObsInput}
                 onChange={(e) => setNewObsInput(e.target.value)}
                 onKeyDown={(e) => {

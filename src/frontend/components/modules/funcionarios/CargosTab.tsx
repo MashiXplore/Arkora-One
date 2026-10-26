@@ -186,18 +186,16 @@ export function CargosTab() {
         title={editingCargo ? 'Editar Cargo' : 'Nuevo Cargo'}
         size="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} autoComplete="off" className="space-y-3.5">
           <Input
             id="cargo-nombre"
             label="Nombre del Cargo *"
-            placeholder="Ej. Oficial de Crédito"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
           />
           <Input
             id="cargo-descripcion"
             label="Descripción del Puesto"
-            placeholder="Ej. Evaluación y seguimiento de colocación de microcréditos"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
           />
